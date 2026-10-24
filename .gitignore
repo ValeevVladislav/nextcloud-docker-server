@@ -1,0 +1,23 @@
+# Environment variables / secrets
+.env
+.env.local
+
+# Backups
+backup/
+backups/
+*.sql
+*.tar
+*.tar.gz
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
