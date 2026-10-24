@@ -13,11 +13,22 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   redis:
     image: redis:7.4-alpine
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     image: nextcloud:34-apache
@@ -37,8 +48,10 @@ services:
       - nextcloud_data:/var/www/html
 
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   db_data:

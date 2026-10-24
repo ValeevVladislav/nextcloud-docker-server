@@ -1,0 +1,58 @@
+services:
+
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    volumes:
+      - db_data:/var/lib/mysql
+
+    healthcheck:
+     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+     interval: 10s
+     timeout: 5s
+     retries: 5
+     start_period: 30s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: nextcloud:34-apache
+    restart: unless-stopped
+
+    ports: !override
+      - "8081:80"
+
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: redis
+
+    volumes:
+      - nextcloud_data:/var/www/html
+
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  nextcloud_data:
