@@ -32,3 +32,11 @@ The application consists of three Docker services:
           |
           v
     Persistent Data
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Installation](docs/installation.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Backup and Restore](docs/backup-restore.md)
+- [Production Notes](docs/production.md)
